@@ -7,7 +7,17 @@
 <body>
     <div>
         <script src="header.js"></script>
-        <script src="resize.js"></script>
+        <script type="text/javascript">
+            function autoResize(id){
+                var newheight;
+
+                if(document.getElementById){
+                    newheight=document.getElementById(id).contentWindow.document .body.scrollHeight;
+                }
+
+                document.getElementById(id).height= (newheight) + "px";
+            }
+        </script>
 
         <iframe src="http://jackieokay.blogspot.com" id="blog" frameborder="0" width=800 height=1000 scrolling=no allowfullscreen onload="autoResize(this.id)"></iframe>
     </div>
