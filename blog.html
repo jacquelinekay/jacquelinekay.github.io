@@ -7,7 +7,16 @@
 <body>
     <div>
         <script src="header.js"></script>
-        
-        <iframe src="http://jackieokay.blogspot.com" id="blog" frameborder="0" width=800 height=1000 scrolling=no allowfullscreen></iframe>
+       <script language="JavaScript">
+<!--
+function autoResize(id){
+    //var newheight = window.innerHeight;
+    var newheight = document.getElementsByTagName('body')[0].clientHeight;
+
+    document.getElementById(id).height= (newheight) + "px";
+}
+//-->
+</script> 
+        <iframe src="http://jackieokay.blogspot.com" id="blog" frameborder="0" width=800 height="100%" scrolling=yes allowfullscreen;></iframe>
     </div>
 </body>
