@@ -1,0 +1,7 @@
+---
+layout: post
+title:  "a blog post"
+date:   2016-3-5 12:36:51 -0800
+categories: jekyll update
+---
+Stuff
