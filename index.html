@@ -1,17 +1,23 @@
-<!DOCTYPE html>
-<head>
-  <link href="normalize.css" rel="stylesheet">
-  <link rel="stylesheet" href="main.css">
-  <title>Jackie Kay</title>
-</head>
-<body>
-  <script src="header.js"></script>
-  <div>
-    <img style="margin: 5px; float: right;" src="assets/jackie.jpg">
-    <p>I am a software engineer interested in robotics and distributed systems. I recently graduated from Swarthmore College and will start a full-time position at Google Mountain View in September. I used to think about being an English major.</p>
+---
+layout: default
+---
 
-    <p>If you'd like to read about my day-to-day life, please follow the link above to my blog.</p>
-    
-  </div>
-</body>
+<div class="home">
 
+  <h1 class="page-heading">Posts</h1>
+
+  <ul class="post-list">
+    {% for post in site.posts %}
+      <li>
+        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
+
+        <h2>
+          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+        </h2>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
+
+</div>
