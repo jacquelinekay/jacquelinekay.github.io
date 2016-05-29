@@ -1,8 +1,3 @@
----
-layout: page
-title: about
-permalink: /about/
----
 
 hi. I am a software engineer in Mountain View, CA.
 
@@ -10,7 +5,7 @@ I currently work at the [Open Source Robotics Foundation](http://www.osrfoundati
 
 Most of my time is spent developing ROS 2, the next generation open source robotics middleware framework.
 
-I am also a maintainer (but not the original author) of:
+I am also a maintainer of:
 
   - [robot_model](https://github.com/ros/robot_model), tools for parsing and managing the description of a robot
   - [robot_state_publisher](https://github.com/ros/robot_state_publisher), tool for changing and publishing the state of a robot
