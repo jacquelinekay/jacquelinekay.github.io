@@ -1,18 +1,10 @@
+hi. I am a software engineer living in San Francisco, CA.
 
-hi. I am a software engineer in Mountain View, CA.
-
-I currently work at the [Open Source Robotics Foundation](http://www.osrfoundation.org/), on the [ROS](http://wiki.ros.org/) team.
-
-Most of my time is spent developing ROS 2, the next generation open source robotics middleware framework.
-
-I am also a maintainer of:
-
-  - [robot_model](https://github.com/ros/robot_model), tools for parsing and managing the description of a robot
-  - [robot_state_publisher](https://github.com/ros/robot_state_publisher), tool for changing and publishing the state of a robot
-  - [urdfdom](https://github.com/ros/urdfdom) and [urdf_parser_py](https://github.com/ros/urdf_parser_py), parser for URDF (robot description format)
+I'm currently at [Marble](marble.io).
 
 Some of my previous work includes:
 
+  - developer on ROS/ROS 2 at the [Open Source Robotics Foundation](http://www.osrfoundation.org/).
   - developer on [Gazebo](http://gazebosim.org/), the open source physics simulator for robotics
   - [demos for the Baxter Research Robot](https://github.com/osrf/baxter_demos)
   - research on time-dependent path planning at CMU Lunar XPrize lab ([poster]({{site.baseurl}}/assets/kay-poster-riss13.pdf))
