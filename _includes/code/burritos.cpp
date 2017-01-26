@@ -229,7 +229,7 @@ int main(int argc, char **argv) {
       f.fat += 14;
       return make_burrito(f);
     } else {
-      return make_burrito();
+      return make_burrito();  // Represents an "invalid burrito"
     }
   };
 
@@ -238,7 +238,7 @@ int main(int argc, char **argv) {
       f.sodium += 0.002;
       return make_burrito(f);
     } else {
-      return make_burrito();
+      return make_burrito();  // Represents an "invalid burrito"
     }
   };
 
