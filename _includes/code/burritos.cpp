@@ -1,4 +1,5 @@
 #include <boost/hana.hpp>
+#include <boost/hana/ext/std/tuple.hpp>
 #include <iostream>
 #include <tuple>
 
@@ -51,8 +52,7 @@ auto operator+(food<F> const &f, nutrition_tuple const &g) {
 
 template <typename F>
 auto operator+(nutrition_tuple const &g, food<F> const &f) {
-  return nutrition_tuple(f.carbs + std::get<0>(g), f.protein + std::get<1>(g),
-                         f.fat + std::get<2>(g), f.sodium + std::get<3>(g));
+  return f + g;
 }
 
 template <size_t... i>
@@ -69,6 +69,8 @@ auto operator+(nutrition_tuple const &f, nutrition_tuple const &g) {
 template <size_t... i, typename... Fillings>
 auto calculate_nutrients_helper(std::index_sequence<i...>,
                                 std::tuple<Fillings...> const &fillings) {
+  //auto filtered = hana::filter(fillings, [](auto x){ return is_food_v<decltype(x)>; });
+  //return (nutrition_tuple(0.0, 0.0, 0.0, 0.0) + ... + std::get<i>(filtered));
   return (nutrition_tuple(0.0, 0.0, 0.0, 0.0) + ... + std::get<i>(fillings));
 }
 
@@ -127,7 +129,7 @@ struct burrito : public food<burrito<Fillings...>> {
   using food_type = food<burrito<Fillings...>>;
   burrito(Fillings &&... f)
       : food_type(calculate_nutrients(
-            std::make_tuple(std::forward<Fillings>(f)...))),
+            std::make_tuple(f...))),
         fillings(std::make_tuple(std::forward<Fillings>(f)...)) {}
 
   burrito(std::tuple<Fillings...> &&t)
@@ -155,11 +157,11 @@ std::ostream &operator<<(std::ostream &os, const food<F> &f) {
 
 // Utilities for cooking new burritos
 template <typename... Fs> static auto make_burrito(Fs &&... fs) {
-  return burrito<Fs...>(std::forward<Fs>(fs)...);
+  return burrito<std::decay_t<Fs>...>(std::forward<Fs>(fs)...);
 }
 
 template <typename... Fs> static auto make_burrito(std::tuple<Fs...> &&t) {
-  return burrito<Fs...>(std::forward<std::tuple<Fs...>>(t));
+  return burrito<Fs...>(std::move(t));
 }
 
 struct burrito_tag {};
@@ -201,7 +203,10 @@ template <> struct hana::lift_impl<burrito_tag> {
 template <> struct hana::ap_impl<burrito_tag> {
   template <typename F, typename X>
   static constexpr decltype(auto) apply(F &&f, X &&x) {
-    return make_burrito(f(std::forward<X>(x)));
+    auto unwrapped_f = std::get<0>(f.get_fillings());
+    auto unwrapped_x = std::get<0>(x.get_fillings());
+    // TODO
+    return make_burrito(unwrapped_f(unwrapped_x));
   }
 };
 
@@ -226,9 +231,18 @@ int main(int argc, char **argv) {
   auto fry = [](auto &&f) {
     if constexpr(is_food_v<decltype(f)>) {
       f.fat += 14;
-      return f;
+      return make_burrito(f);
     } else {
-      return hana::nothing;
+      return make_burrito();
+    }
+  };
+
+  auto monadic_salt = [](auto &&f) {
+    if constexpr(is_food_v<decltype(f)>) {
+      f.sodium += 0.002;
+      return make_burrito(f);
+    } else {
+      return make_burrito();
     }
   };
 
@@ -240,6 +254,7 @@ int main(int argc, char **argv) {
       return hana::nothing;
     }
   };
+
 
   {
     auto bb = make_burrito(beans(50.0), rice(100.0), beef(100.0));
@@ -288,16 +303,14 @@ int main(int argc, char **argv) {
 
     // Chain operations on a burrito.
     auto cb = make_burrito(beans(50), rice(100), chicken(50));
-    auto burrito_pipeline = hana::monadic_compose(fry, salt);
+    auto burrito_pipeline = hana::monadic_compose(fry, monadic_salt);
     auto combo_burrito = burrito_pipeline(std::move(cb));
 
     std::cout << "Salty fried chicken burrito:\n" << combo_burrito << std::endl;
-    std::cout << "Heart attack in a tortilla:\n"
-              << burrito_pipeline(chimichanga) << std::endl;
 
     std::string bar = "A bar is not edible.";
     auto result = burrito_pipeline(bar);
-    static_assert(result == hana::nothing);
+    static_assert(std::is_same_v<decltype(result), burrito<>>);
   }
 
   return 0;
