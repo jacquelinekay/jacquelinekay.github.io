@@ -243,7 +243,7 @@ int main(int argc, char **argv) {
 
   {
     auto bb = make_burrito(beans(50.0), rice(100.0), beef(100.0));
-    std::cout << "Beef burrito: " << std::endl << bb << std::endl;
+    std::cout << "Beef burrito: \n" << bb << std::endl;
 
     // Check that the burrito type conforms to the required concepts.
     static_assert(hana::Functor<decltype(bb)>::value,
