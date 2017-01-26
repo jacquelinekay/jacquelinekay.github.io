@@ -8,4 +8,6 @@ twitter_username: jackayline
 
 # Build settings
 markdown: kramdown
-highlighter: rouge
+#highlighter: rouge
+kramdown:
+  input: GFM
