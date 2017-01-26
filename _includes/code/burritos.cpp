@@ -69,8 +69,6 @@ auto operator+(nutrition_tuple const &f, nutrition_tuple const &g) {
 template <size_t... i, typename... Fillings>
 auto calculate_nutrients_helper(std::index_sequence<i...>,
                                 std::tuple<Fillings...> const &fillings) {
-  //auto filtered = hana::filter(fillings, [](auto x){ return is_food_v<decltype(x)>; });
-  //return (nutrition_tuple(0.0, 0.0, 0.0, 0.0) + ... + std::get<i>(filtered));
   return (nutrition_tuple(0.0, 0.0, 0.0, 0.0) + ... + std::get<i>(fillings));
 }
 
@@ -204,9 +202,7 @@ template <> struct hana::ap_impl<burrito_tag> {
   template <typename F, typename X>
   static constexpr decltype(auto) apply(F &&f, X &&x) {
     auto unwrapped_f = std::get<0>(f.get_fillings());
-    auto unwrapped_x = std::get<0>(x.get_fillings());
-    // TODO
-    return make_burrito(unwrapped_f(unwrapped_x));
+    return hana::transform(x, unwrapped_f);
   }
 };
 
@@ -228,7 +224,7 @@ template <> struct hana::flatten_impl<burrito_tag> {
 
 int main(int argc, char **argv) {
   // Some valid operations over food types
-  auto fry = [](auto &&f) {
+  auto monadic_fry = [](auto &&f) {
     if constexpr(is_food_v<decltype(f)>) {
       f.fat += 14;
       return make_burrito(f);
@@ -247,17 +243,14 @@ int main(int argc, char **argv) {
   };
 
   auto salt = [](auto &&f) {
-    if constexpr(is_food_v<decltype(f)>) {
-      f.sodium += 0.002;
-      return f;
-    } else {
-      return hana::nothing;
-    }
+    f.sodium += 0.002;
+    return f;
   };
 
 
   {
     auto bb = make_burrito(beans(50.0), rice(100.0), beef(100.0));
+
     std::cout << "Beef burrito: \n" << bb << std::endl;
 
     // Check that the burrito type conforms to the required concepts.
@@ -278,12 +271,12 @@ int main(int argc, char **argv) {
     auto merged_burrito = hana::flatten(std::move(monster_burrito));
     std::cout << "Merged burrito: \n" << merged_burrito << std::endl;
 
-    // You can fry each individual ingredient of a burrito.
-    auto fried_bb = hana::transform(std::move(merged_burrito), fry);
+    // You can monadic_fry each individual ingredient of a burrito.
+    auto fried_bb = hana::transform(std::move(merged_burrito), monadic_fry);
     std::cout << "Fried burrito: \n" << fried_bb << std::endl;
 
-    // Or you can fry an entire burrito.
-    auto chimichanga = fry(fried_bb);
+    // Or you can monadic_fry an entire burrito.
+    auto chimichanga = monadic_fry(fried_bb);
     std::cout << "Chimichanga: \n" << chimichanga << std::endl;
   }
 
@@ -303,7 +296,7 @@ int main(int argc, char **argv) {
 
     // Chain operations on a burrito.
     auto cb = make_burrito(beans(50), rice(100), chicken(50));
-    auto burrito_pipeline = hana::monadic_compose(fry, monadic_salt);
+    auto burrito_pipeline = hana::monadic_compose(monadic_fry, monadic_salt);
     auto combo_burrito = burrito_pipeline(std::move(cb));
 
     std::cout << "Salty fried chicken burrito:\n" << combo_burrito << std::endl;
