@@ -100,7 +100,7 @@ constexpr auto as_tuple_impl(T&& val, size_t_<2>) noexcept {
 }
 ```
 
-These specializations of `as_tuple_impl` repeat this same pattern for a total of 101 specializations (line breaks are my own):
+These specializations of `as_tuple_impl` repeat this same pattern for a total of 101 specializations (some liberty was taken with line breaks):
 
 ```c++
 template <class T>
@@ -255,9 +255,13 @@ The C++ ISO Standards Committee has a study group on reflection and metaprogramm
 
 The `reflexpr` proposal, by Matúš Chochlík, Axel Naumann, and David Sankel, introduces several "metaobjects" which are accessed by passing a type to the new `reflexpr` operator. I recommend ["Static Reflection in a Nutshell"](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/p0578r0.html) for a brief overview of the design and [Static reflection](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/p0194r3.html) for a longer overview. You can find instructions for building Matúš's fork of Clang which implements `reflexpr`, read his documentation, and explore his `mirror` utility library [here](http://matus-chochlik.github.io/mirror/doc/html/index.html).
 
-Andrew Sutton and Herb Sutter submitted a paper, ["A design for static reflection"](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/p0590r0.pdf), which introduces the reflection operator, `$`, as a way of getting object metadata out of a class, namespace, etc. (Using `$` has been argued out of favor because it is common in legacy code, particularly in code generation and template systems which are not necessarily valid C++ but produce C++ sources.)
+Andrew Sutton and Herb Sutter wrote, ["A design for static reflection"](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/p0590r0.pdf), which introduces the reflection operator, `$`, as a way of getting object metadata out of a class, namespace, etc. (Using `$` has been argued out of favor because it is common in legacy code, particularly in code generation and template systems which are not necessarily valid C++ but produce C++ sources.) You can explore Andrew Sutton's Clang fork implementing the proposal [here](https://github.com/asutton/clang-reflect).
 
-The fundamental design difference between these two papers is whether reflection 
+You don't have to read the papers to continue enjoying this blog post, because I'll just tell you the interesting bits. The fundamental design difference between these two papers is whether the result of the reflection operator should be a value or a type.
+
+TODO:
+
+Regardless of whether you prefer type-based metaprogramming or value-based metaprogramming...
 
 ## Conclusion (for now)
 
