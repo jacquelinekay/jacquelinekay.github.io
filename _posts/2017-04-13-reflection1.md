@@ -45,7 +45,7 @@ Actually, there are a few ways you can achieve reflection in the language today,
 ### RTTI
 Run-time type information/identification is a controversial C++ feature, commonly reviled by performance maniacs and zero-overhead zealots. If you've ever used `dynamic_cast`, `typeid`, or `type_info`, you were using RTTI.
 
-RTTI is C++'s built-in mechanism for matching relationships between types at runtime. That relationship can be equality or a relationship via inheritance. Therefore it implements a kind of limited runtime introspection. However, C++ RTTI requires using vtables (virtual function tables), the array of pointers used to dispatch virtual functions to their runtime-determined implementations. Compiling with `-fnortti` is a common optimization to disable generating vtables, which saves the compiler a lot of work in code generation. But it also disables the "idiomatic" C++ way of achieving runtime polymorphism.
+RTTI is C++'s built-in mechanism for matching relationships between types at runtime. That relationship can be equality or a relationship via inheritance. Therefore it implements a kind of limited runtime introspection. However, C++ RTTI requires using vtables (virtual function tables), the array of pointers used to dispatch virtual functions to their runtime-determined implementations. Compiling with `-fnortti` is a common optimization to disable generating vtables, which can save on code size as well as compilation times (since the compiler has less work to do). But it also disables the "idiomatic" C++ way of achieving runtime polymorphism.
 
 A bit of a sidebar: why is RTTI idiomatic C++ when there are better alternatives? LLVM implements an alternative to RTTI which works on classes without vtables, but requires a little extra boilerplate (see the [LLVM Programmer's Manual](http://llvm.org/docs/ProgrammersManual.html#the-isa-cast-and-dyn-cast-templates)). And, if you squint at the extra boilerplate used in this technique, you can imagine formalizing this with a generic library and even adding more ideas like dynamic concepts (sometimes called interfaces in other languages). In fact, Louis Dionne is working on a [experimental library](https://github.com/ldionne/dyno) that does just that.
 
@@ -89,7 +89,7 @@ hana::for_each(jackie, [](auto pair) {
 // age: 24
 ```
 
-The basic idea behind the magic is that the macro generates generic set and get functions for each member. It "stringizes" the field name given to the macro so it can be used as a compile-time string key, and uses the identifier name and type to get the member pointer for each field. Then it adapts the struct to a tuple of compile-time string key, member pointer accessor pairs.
+The basic idea behind the magic is that the macro generates generic set and get functions for each member. It "stringizes" the field name given to the macro so it can be used as a constexpr string key, and uses the identifier name and type to get the member pointer for each field. Then it adapts the struct to a tuple of compile-time string key, member pointer accessor pairs.
 
 Though that sounds fairly straightforward, the code is quite formidable and verbose. That's because there's a separate macro case for adapting a struct of specific sizes. For example, all structs with 1 member map to a particular macro, all structs with 2 members map to the next macro, etc.
 
@@ -103,27 +103,28 @@ The macro is actually generated from a less than 200-line [Ruby template](https:
     BOOST_HANA_PP_CONCAT(BOOST_HANA_DEFINE_STRUCT_IMPL_, N)(__VA_ARGS__)
 
 <% (0..MAX_NUMBER_OF_MEMBERS).each do |n| %>
-#define BOOST_HANA_DEFINE_STRUCT_IMPL_<%= n+1 %>(TYPE <%= (1..n).map { |i| ", m#{i}" }.join %>)       \
-  <%= (1..n).map { |i| "BOOST_HANA_PP_DROP_BACK m#{i} BOOST_HANA_PP_BACK m#{i};" }.join(' ') %>       \
-                                                                                                      \
-  struct hana_accessors_impl {                                                                        \
-    static constexpr auto apply() {                                                                   \
-      struct member_names {                                                                           \
-        static constexpr auto get() {                                                                 \
-            return ::boost::hana::make_tuple(                                                         \
-              <%= (1..n).map { |i| "BOOST_HANA_PP_STRINGIZE(BOOST_HANA_PP_BACK m#{i})" }.join(', ') %>\
-            );                                                                                        \
-        }                                                                                             \
-      };                                                                                              \
-      return ::boost::hana::make_tuple(                                                               \
-        <%= (1..n).map { |i| "::boost::hana::make_pair(                                               \
-            ::boost::hana::struct_detail::prepare_member_name<#{i-1}, member_names>(),                \
-            ::boost::hana::struct_detail::member_ptr<                                                 \
-                decltype(&TYPE::BOOST_HANA_PP_BACK m#{i}),                                            \
-                &TYPE::BOOST_HANA_PP_BACK m#{i}>{})" }.join(', ') %>                                  \
-      );                                                                                              \
-    }                                                                                                 \
-  }                                                                                                   \
+#define BOOST_HANA_DEFINE_STRUCT_IMPL_<%= n+1 %>(TYPE <%= (1..n).map { |i| ", m#{i}" }.join %>) \
+  <%= (1..n).map { |i| "BOOST_HANA_PP_DROP_BACK m#{i} BOOST_HANA_PP_BACK m#{i};" }.join(' ') %> \
+                                                                                                \
+  struct hana_accessors_impl {                                                                  \
+    static constexpr auto apply() {                                                             \
+      struct member_names {                                                                     \
+        static constexpr auto get() {                                                           \
+            return ::boost::hana::make_tuple(                                                   \
+              <%= (1..n).map { |i|                                                              \
+                "BOOST_HANA_PP_STRINGIZE(BOOST_HANA_PP_BACK m#{i})" }.join(', ') %>             \
+            );                                                                                  \
+        }                                                                                       \
+      };                                                                                        \
+      return ::boost::hana::make_tuple(                                                         \
+        <%= (1..n).map { |i| "::boost::hana::make_pair(                                         \
+            ::boost::hana::struct_detail::prepare_member_name<#{i-1}, member_names>(),          \
+            ::boost::hana::struct_detail::member_ptr<                                           \
+                decltype(&TYPE::BOOST_HANA_PP_BACK m#{i}),                                      \
+                &TYPE::BOOST_HANA_PP_BACK m#{i}>{})" }.join(', ') %>                            \
+      );                                                                                        \
+    }                                                                                           \
+  }                                                                                             \
 ```
 
 Why did the authors of these libraries write these macros in the first place? Bragging rights, of course!
@@ -194,9 +195,6 @@ constexpr auto as_tuple_impl(T&& val, size_t_<100>) noexcept {
 What's going on here? Antony is decomposing a flat struct of type T into a bunch of references named after consecutive letters in the alphabet. He then forwards those fields on to a tuple of references of his custom tuple type. This is the core mechanism for "converting" from a struct to a tuple. But since there's no way to destructure an arbitrary number of fields ("variadic structured bindings"?), this code can't be written in a generic fashion, and the library instead resorts to generating these specializations via a [Python script](https://github.com/apolukhin/magic_get/blob/develop/misc/generate_cpp17.py).
 
 Again, if we had language-level reflection in C++, these code generation techniques would not be necessary.
-
-### Function reflection: HippoMocks and tromploeil
-TODO: do I want to cover this?
 
 ### Compiler tooling
 The Clang C++ compiler isn't just a standalone executable that takes your source code and spits out an executable. You can use `libclang` or `LibTooling` to write your own tools using an interface to the parsed AST of C++ code. Code that understands its own AST is not only using reflection, it is accessing the most powerful form of introspection, since the introspection API can use all of the information used by the compiler.
