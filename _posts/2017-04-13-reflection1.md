@@ -1,7 +1,7 @@
 ---
 layout: post
 title: An Introduction to Reflection in C++
-hidden: true
+published: false
 ---
 
 Stop me if you've heard this one before. You are working on a messaging middleware, a game engine, a UI library, or any other large software project that has to deal with an ever-growing, ever-changing number of objects. These objects have many different qualities but can be grouped by their functionality: they can be sent across the network or collided with or rendered.
