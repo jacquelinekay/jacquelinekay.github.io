@@ -1,7 +1,8 @@
 ---
 layout: post
-title: Fun with Reflection in C++
 ---
+
+# Fun with Reflection in C++
 
 In [my previous post]({{site.baseurl}}/2017/04/13/reflection1.html), we learned about the current and future state of reflection in C++. But I left a few questions unanswered. Indeed, you may still be wondering why I care so much about reflection and if it has any useful applications for the average programmer. In this post, I'll try to answer that question with real code examples using the two reference implementations of C++ reflection. I'll explore the strengths of the two implementations, as well as the major limitations. These examples make heavy use of metaprogramming and C++17 features, so if you find yourself in unfamiliar territory while reading the code, I suggest supplementing this article with other resources.
 
