@@ -13,7 +13,7 @@ Disclaimer: these reference implementations do not represent the final state of 
 
 # Generating comparison operators
 
-Have you ever written a tedious equality operator that checked for the equality of every member of a regular type? Have you ever written a code generation tool for generator such a function? You're not the only one. In fact, this is such a problem that someone wrote a standards proposal for adding default comparison operators for regular types to the language ([N3950](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n3950.html)). (TODO: show the one Herb proposed too?)
+Have you ever written a tedious equality operator that checked for the equality of every member of a regular type? Have you ever written a code generation tool for generator such a function? You're not the only one. In fact, this is such a problem that someone wrote a standards proposal for adding default comparison operators for regular types to the language ([N3950](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n3950.html)).
 
 It turns out that with reflection, you can write a generic equality operator for any type composed of equality-comparable members!
 
@@ -193,6 +193,8 @@ The implementation of `unreflect_type` is not pretty, which makes me think the l
 
 ```c++ {% include utils/includelines filename='code/reflection/cpp3k/refl_utilities.hpp' start=36 count=8 %}```
 
+And that's about it! If you're feeling a brave, you can check out the [complete implementation on Github](https://github.com/jacquelinekay/reflection_experiments), clone one of the reference implementations and play around with these examples--have fun!
+
 # What's missing?
 
 Reading this blog post, you might feel as if there's something missing. Maybe it was the code smell coming from the macro used for member annotations in the program options example. Or maybe you just aren't impressed by the examples so far.
@@ -203,9 +205,9 @@ The reflection proposals we've looked at do not extend the code generation featu
 - Function instrumentation: this requires essentially the same features needed for mocking. The idea is to automatically a class with the same interface as the input class that counts the number of calls to a function or other statistics for each function in a class.
 - Generating code for "virtual concepts"/"interfaces"/"Rust-style traits". See also [dyno](https://github.com/ldionne/dyno).
 
-Actually, I didn't include any function reflection examples, even though it is implemented in the `cpp3k` fork, because the most interesting and useful applications of function reflection require this missing feature! Introspecting on functions may give us valuable information about overload sets which would save a lot of boilerplate metaprogramming for certain generic libraries, but I didn't see a compelling and immediately obvious application of function reflection for the "everyday programmer".
+Actually, I didn't include any function reflection examples, even though it is implemented in the `cpp3k` fork, because the most interesting and useful applications of function reflection require this missing feature! I didn't see a compelling and immediately obvious application of function introspection for the "everyday programmer".
 
-TODO: example of reflection on overload sets?
+But if you're still reading, you're probably not an everyday programmer! Function reflection could make dealing with overload sets a lot simpler in generic libraries. The user of a library could add a custom callback by overloading a function, and the library could simply reflect over all overloads of a function to find the customization point rather than using tricky ADL rules. I haven't made a demo of this idea, but I'm looking forward to the upcoming talk at C++ Now by Michał Dominiak about ["Customization Points that Suck Less"](https://cppnow2017.sched.com/event/A8J4/customization-points-that-suck-less).
 
 At this point, you might be saying "Jackie, if you have so many opinions about this feature, why don't **you** write a proposal about it?" I'm just one person who has thought about the issue of type synthesis or identifier modification--and some of the others have many, many more years of C++ and software architecture development than I do! Herb Sutter's upcoming proposal on metaclasses is a promising way forward to make reflection and more generic programming as powerful as it needs to be. Out of respect for Herb I'll refrain from saying more until he's officially released this work.
 
