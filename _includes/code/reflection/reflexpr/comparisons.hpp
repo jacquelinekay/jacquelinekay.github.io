@@ -31,7 +31,8 @@ bool equal(const T& a, const T& b) {
     using MetaT = reflexpr(T);
     static_assert(meta::Record<MetaT>,
       "Type contained a member which has no comparison operator defined.");
-    return meta::unpack_sequence_t<meta::get_data_members_m<MetaT>, compare_fold>::apply(a, b);
+    return meta::unpack_sequence_t<
+      meta::get_data_members_m<MetaT>, compare_fold>::apply(a, b);
   }
 }
 

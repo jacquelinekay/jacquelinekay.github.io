@@ -19,7 +19,7 @@ It turns out that with reflection, you can write a generic equality operator for
 
 ## reflexpr
 
-```c++ {% include utils/includelines filename='code/reflection/reflexpr/comparisons.hpp' start=12 count=25 %}```
+```c++ {% include utils/includelines filename='code/reflection/reflexpr/comparisons.hpp' start=12 count=26 %}```
 
 Note that `metap` is simply my own namespace that provides some metaprogramming utilities.
 
@@ -53,9 +53,9 @@ In this example we'll write a simple JSON serializer. If you're closely followin
 
 The basic idea behind serialization is straightforward: like the equality operator example, we'll apply a serialization operation over the members of a struct if they are serializable primitives (numeric types or strings) and recursively call the serialize function on the member if it is a Record.
 
-We'll use `if constexpr` and a mix of type traits and the detection idiom for the "base cases". `stringable` detects if the type has a `std::to_string` operator. `iterable` detects, roughly, if a type can be used in a range-based for loop, like a vector or array (although right now it's not a bulletproof implementation). This will map to a JSON array of the values.
+We'll use `if constexpr` and a mix of type traits and the detection idiom for the "base cases". `stringable` detects if the type has a `std::to_string` operator. `iterable` detects, roughly, if a type can be used in a range-based for loop, like a vector or array (although right now it's not a bulletproof implementation). The if constexpr block conditioned on this type trait will map the type to a JSON array of its values.
 
-```c++ {% include utils/includelines filename='code/reflection/reflexpr/reflser.hpp' start=195 count=23 %}```
+```c++ {% include utils/includelines filename='code/reflection/reflexpr/reflser.hpp' start=195 count=26 %}```
 
 To handle the case where T is a POD type, we'll recursively apply the serialize function over the members of T using reflection. `get_base_name_v` gets the name of the member from the metainfo. We'll use this as the key name in the JSON object.
 
