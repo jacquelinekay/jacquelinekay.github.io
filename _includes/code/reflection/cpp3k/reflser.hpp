@@ -17,7 +17,6 @@ namespace reflser {
 namespace meta = cpp3k::meta;
 namespace refl = jk::refl_utilities;
 namespace metap = jk::metaprogramming;
-namespace sl = jk::string_literal;
 
 enum struct scan_result {
   continue_scanning,
