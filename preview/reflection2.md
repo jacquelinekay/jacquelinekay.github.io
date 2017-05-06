@@ -195,7 +195,7 @@ The implementation of `unreflect_type` is not pretty, which makes me think the l
 
 And that's about it! If you're feeling a brave, you can check out the [complete implementation on Github](https://github.com/jacquelinekay/reflection_experiments), clone one of the reference implementations and play around with these examples--have fun!
 
-# What's missing?
+# In conclusion: what's missing?
 
 Reading this blog post, you might feel as if there's something missing. Maybe it was the code smell coming from the macro used for member annotations in the program options example. Or maybe you just aren't impressed by the examples so far.
 
@@ -212,7 +212,5 @@ But if you're still reading, you're probably not an everyday programmer! Functio
 At this point, you might be saying "Jackie, if you have so many opinions about this feature, why don't **you** write a proposal about it?" I'm just one person who has thought about the issue of type synthesis or identifier modification--and some of the others have many, many more years of C++ and software architecture development than I do! Herb Sutter's upcoming proposal on metaclasses is a promising way forward to make reflection and more generic programming as powerful as it needs to be. Out of respect for Herb I'll refrain from saying more until he's officially released this work.
 
 (For the curious reader: the very first thing I tried to do with the `reflexpr` fork was making a ["type synthesis"](https://github.com/jacquelinekay/reflection_experiments/blob/master/include/reflection_experiments/reflexpr/type_synthesis.hpp) example which included metafunctions for adding and removing members using constexpr strings. However, I haven't polished this due to my realization that without language-level support for using reflection info in identifiers and standardization of more metaprogramming utilities like constexpr strings and heterogenous data structures and algorithms, the interface for such a library is, in my opinion, unusable.)
-
-# Conclusion
 
 In the third and final part of this series, we'll take a look at the performance implications of reflection as it's currently proposed--specifically, the metaprogramming techniques needed to make reflection useful.
