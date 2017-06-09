@@ -4,7 +4,7 @@ I enjoy talking about software, especially C++ and robotics. I'm trying to blog 
 
 Some of my previous work includes:
 
-  - Software engineer at [Marble](marble.io), bootstrapped infrastructure, CI, and robot navigation.
+  - Software engineer at [Marble](https://marble.io), bootstrapped infrastructure, CI, and robot navigation.
   - developer on ROS/ROS 2 at the [Open Source Robotics Foundation](http://www.osrfoundation.org/).
   - developer on [Gazebo](http://gazebosim.org/), the open source physics simulator for robotics
   - [demos for the Baxter Research Robot](https://github.com/osrf/baxter_demos)
